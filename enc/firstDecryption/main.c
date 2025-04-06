@@ -7,6 +7,8 @@
 #define ENCRYPT 1
 #define DECRYPT 0
 
+#define FILEIN "file.decode"
+
 int main()
 {
     FILE *f_in;
@@ -16,16 +18,18 @@ int main()
     
     // system("openssl base64 -d -in file.enc -out file.decode");
     
-    if((f_in = fopen("file.decode","r")) == NULL) {
+    if((f_in = fopen(FILEIN,"r")) == NULL) {
             fprintf(stderr,"Couldn't open the input file, try again\n");
             abort();
     }
 
+    // convert hexstring to binary
     unsigned char key_bin[strlen(key)/2];
     for(int i = 0; i < strlen(key)/2;i++){
         sscanf(&key[2*i],"%2hhx", &key_bin[i]);
     }
-
+    
+    // convert hexstring to binary
     unsigned char iv_bin[strlen(iv)/2];
     for(int i = 0; i < strlen(iv)/2;i++){
         sscanf(&iv[2*i],"%2hhx", &iv_bin[i]);
@@ -34,8 +38,8 @@ int main()
     unsigned char ciphertext_binary[1024];
     int ciphertext_len;
 
-    while (fscanf(f_in,"%s",ciphertext_binary) != EOF)
-        printf("%s\n",ciphertext_binary);
+    while (fscanf(f_in,"%s",ciphertext_binary) != EOF);
+        // printf("%s\n",ciphertext_binary);
     ciphertext_len = strlen(ciphertext_binary);
 
     fclose(f_in);
@@ -50,17 +54,17 @@ int main()
 
     EVP_CipherUpdate(ctx,decrypted,&update_len,ciphertext_binary,ciphertext_len);
     decrypted_len+=update_len;
-    printf("update size: %d\n",decrypted_len);
+    // printf("update size: %d\n",decrypted_len);
 
     EVP_CipherFinal_ex(ctx,decrypted+decrypted_len,&final_len);
     decrypted_len+=final_len;
 
     EVP_CIPHER_CTX_free(ctx);
 
-    printf("Plaintext lenght = %d\n",decrypted_len);
-    for(int i = 0; i < decrypted_len; i++)
-        printf("%02x", decrypted[i]);
-    printf("\n");
+    // printf("Plaintext lenght = %d\n",decrypted_len);
+    // for(int i = 0; i < decrypted_len; i++)
+    //     printf("%02x", decrypted[i]);
+    // printf("\n");
     
     for(int i = 0; i < decrypted_len; i++)
         printf("%c", decrypted[i]);

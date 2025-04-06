@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 
 
-    if(argc != 5){
+    if(argc != 5){ // 1: file.txt 2: key 3: iv 4: file.enc
         fprintf(stderr,"Invalid parameters. Usage: %s file_in key iv file_out\n",argv[0]);
         exit(1);
     }

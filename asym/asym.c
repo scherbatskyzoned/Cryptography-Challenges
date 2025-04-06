@@ -29,13 +29,13 @@ int main() {
     for (int i = 0; i < strlen(q_hex); i++) {
         q_hex[i] = tolower(q_hex[i]);
     }
-    printf("00");
+    printf("CRYPTO25{00");
     for (int i = 0; i < strlen(q_hex); i++) {
         if (i % 2 == 0)
             printf(":");
         printf("%c", q_hex[i]);
     }
-
+    printf("}\n");
     BN_free(N);
     BN_free(p);
 

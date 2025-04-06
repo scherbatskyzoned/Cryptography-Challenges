@@ -28,10 +28,11 @@ int main() {
 
     for (int i = 0; i < 64; i++)
         key[i] = k1[i] ^ k2[i];
-
-    for (int i = 0; i < 64; i++)
+    int i;
+    printf("CRYPTO25{");
+    for (i = 0; i < 64 - 1; i++)
         printf("%02x-", key[i]);
-
+    printf("%02x}", key[i]);
     
 }
 

@@ -23,11 +23,9 @@ int main(int argc, char **argv)
 //  int EVP_CipherUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const unsigned char *in, int inl);
 //  int EVP_CipherFinal(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
-
-
-
-    if(argc != 5){
-        fprintf(stderr,"Invalid parameters. Usage: %s file_in key iv file_out\n",argv[0]);
+    // algo_name e.g. aes-128-cbc or aes-256-ecb
+    if(argc != 6){
+        fprintf(stderr,"Invalid parameters. Usage: %s file_in key iv file_out algo_name\n",argv[0]);
         exit(1);
     }
 
@@ -53,6 +51,11 @@ int main(int argc, char **argv)
             abort();
     }
 
+    if(EVP_get_cipherbyname(argv[5]) == NULL) {
+        fprintf(stderr, "Cipher not found. Try again\n");
+        abort();
+    }
+
     unsigned char key[strlen(argv[2])/2];
     for(int i = 0; i < strlen(argv[2])/2;i++){
         sscanf(&argv[2][2*i],"%2hhx", &key[i]);
@@ -73,7 +76,7 @@ int main(int argc, char **argv)
     // pedantic mode: check NULL
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-    if(!EVP_CipherInit(ctx,EVP_aes_128_cbc(), key, iv, ENCRYPT))
+    if(!EVP_CipherInit(ctx, EVP_get_cipherbyname(argv[5]), key, iv, ENCRYPT))
         handle_errors();
 
     int length;

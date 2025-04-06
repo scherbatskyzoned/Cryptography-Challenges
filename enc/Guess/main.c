@@ -1,12 +1,22 @@
 #include <openssl/ssl.h>
 #include <openssl/evp.h>
-
+#include <ctype.h>
 
 #define ENCRYPT 1
 #define DECRYPT 0
 
+int isHumanReadable(const char *str, int len) {
+    if (len == 0)
+        return 0;
+    for (int i=0; i < len; i++) {
+        if (!isprint(str[i]) && !isspace(str[i]))
+            return 0;
+    }
+    return 1;
+}
 
 int main() {
+    // ARIA-128-CBC
     unsigned char key[] = "0123456789ABCDEF";
     unsigned char iv[] = "0123456789ABCDEF";
     unsigned char ciphertext_b64[] = "ZZJ+BKJNdpXA2jaX8Zg5ItRola18hi95MG8fA/9RPvg=";
@@ -144,8 +154,8 @@ int main() {
     unsigned char ciphertext_binary[1024];
     int ciphertext_len;
 
-    while (fscanf(fin,"%s",ciphertext_binary) != EOF)
-        printf("%s\n",ciphertext_binary);
+    while (fscanf(fin,"%s",ciphertext_binary) != EOF);
+        // printf("%s\n",ciphertext_binary);
     ciphertext_len = strlen(ciphertext_binary);
 
     fclose(fin);
@@ -156,13 +166,12 @@ int main() {
         int update_len, final_len;
         int decrypted_len=0;
         
-        printf("Trying cipher: %s\n", EVP_CIPHER_name(evp_ciphers[i]));
+        // printf("Trying cipher: %s\n", EVP_CIPHER_name(evp_ciphers[i]));
         
         EVP_CipherInit(ctx,evp_ciphers[i], key, iv, DECRYPT);
         EVP_CipherUpdate(ctx,decrypted,&update_len,ciphertext_binary,ciphertext_len);
     
         decrypted_len+=update_len;
-        // printf("update size: %d\n",decrypted_len);
 
         EVP_CipherFinal_ex(ctx, decrypted+decrypted_len, &final_len);
         decrypted_len+=final_len;
@@ -171,9 +180,13 @@ int main() {
         // for(int i = 0; i < decrypted_len; i++)
         //     printf("%2x", decrypted[i]);
         // printf("\n");
-        for(int i = 0; i < decrypted_len; i++)
-            printf("%c", decrypted[i]);
-        printf("\n\n\n");
+        if (isHumanReadable(decrypted, decrypted_len)) {
+            printf("Trying cipher: %s\n", EVP_CIPHER_name(evp_ciphers[i]));
+            for(int i = 0; i < decrypted_len; i++)
+                printf("%c", decrypted[i]);
+            printf("\n\n");
+        }
+
         i++;
     }
 

@@ -41,7 +41,7 @@ int main(int argc, char **argv){
         // int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl);
         // Returns 1 for success and 0 for failure.
         EVP_PKEY *hkey;
-        hkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, key, 16);
+        hkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, key, strlen(key));
  
         if(!EVP_DigestSignInit(hmac_ctx, NULL, EVP_sha256(), NULL, hkey))
             handle_errors();
